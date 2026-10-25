@@ -29,20 +29,21 @@
 
 ## 下载 / Downloads
 
-构建产物发布在本仓库的 [Releases](https://github.com/FairyJJ/Android-DataBackup/releases) 页面。
-同一份代码提供两种构建类型，功能完全一致，差别只在签名、体积与调试信息：
+构建产物发布在本仓库的 [Releases](https://github.com/FairyJJ/Android-DataBackup/releases) 页面，
+命名与上游保持一致（`DataBackup-<版本>-<ABI>-<变体>-<构建类型>.apk`）：
 
-| 构建类型 | APK 文件名后缀 | 签名 | R8 混淆 / 资源压缩 | 体积 | 适用场景 |
+| 资产 | 变体 | applicationId | 构建类型 | 体积 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| **Release（正式版）** | `...-release.apk` | fork 自有 keystore | 开启（`isMinifyEnabled` + `isShrinkResources`） | 更小 | 日常使用，**推荐** |
-| Debug（调试版） | `...-debug.apk` | Android debug keystore | 关闭，保留 `BuildConfig.DEBUG` | 较大（约 35 MB） | 抓日志、排查问题 |
+| `DataBackup-2.0.12-arm64-v8a-foss-release.apk` | foss | `com.xayah.databackup.foss` | release | 13.9 MB | 无 Firebase 依赖，日常使用**推荐** |
+| `DataBackup-2.0.12-arm64-v8a-premium-release.apk` | premium | `com.xayah.databackup.premium` | release | 14.5 MB | 含 Firebase（Analytics / Crashlytics） |
+| `DataBackup-2.0.12-arm64-v8a-foss-debug.apk` | foss | `com.xayah.databackup.foss` | debug | 34.7 MB | 未混淆，用于抓日志排查 |
 
-两者的 `applicationId` 相同（foss 变体为 `com.xayah.databackup.foss`），但**签名不同**，
-因此不能互相覆盖安装，升级前需要先卸载（卸载会清空应用内的任务历史，存储目录里的备份文件不受影响）。
-与上游官方版本的签名同样不同，从上游版本迁移过来也需要先卸载。
-
-本仓库只提供 `arm64-v8a` + `foss` 变体（覆盖绝大多数 64 位 arm 设备，无 Firebase 依赖）。
-其他 ABI 或 `premium` 变体请自行按下面的步骤构建。
+- release 构建开启 R8 代码混淆与资源压缩（`isMinifyEnabled` + `isShrinkResources`），`android:debuggable=false`；
+  debug 构建关闭两者。
+- `foss` 与 `premium` 的 `applicationId` 不同，可以**并存安装**。
+- 签名：release 用 **fork 自有 keystore**，debug 用 **Android debug keystore**，两者签名不同，不能互相覆盖安装。
+  与上游官方版本签名同样不同，从上游版本迁移过来需要先卸载（卸载会清空应用内的任务历史，存储目录里的备份文件不受影响）。
+- 本仓库只提供 `arm64-v8a`（覆盖绝大多数 64 位 arm 设备）。其他 ABI 请自行按下面的步骤构建。
 
 ### 自行构建正式版
 
@@ -57,7 +58,9 @@ export KEY_PASSWORD=你的key口令
 
 cd source
 ./gradlew :app:assembleArm64-v8aFossRelease
-# 产物：source/app/build/outputs/apk/arm64-v8aFoss/release/DataBackup-<版本>-arm64-v8a-foss-release.apk
+./gradlew :app:assembleArm64-v8aPremiumRelease   # 含 Firebase，需 feature/flavor/premium/google-services.json
+./gradlew :app:assembleArm64-v8aFossDebug        # 调试版，用内置 debug keystore
+# 产物：source/app/build/outputs/apk/<变体>/<构建类型>/DataBackup-<版本>-arm64-v8a-<变体>-<构建类型>.apk
 ```
 
 ## 免责声明 / Disclaimer
