@@ -1,3 +1,10 @@
+> [!WARNING]
+> **本仓库是第三方 fork / This is a third-party fork.**
+> 上游项目：[XayahSuSuSu/Android-DataBackup](https://github.com/XayahSuSuSu/Android-DataBackup)。
+> 本仓库的改动、构建产物与上游作者无关，需 Root 权限，使用风险自负。
+>
+> Not affiliated with the upstream author. See [FORK.md](./FORK.md).
+
 <div align="center">
 
 <span style="font-weight: bold"> <a> English </a> </span>
