@@ -27,6 +27,39 @@
 3. **新增文档**：[docs/kill-app-options.md](docs/kill-app-options.md)（英文）、
    [docs/kill-app-options.zh-CN.md](docs/kill-app-options.zh-CN.md)（中文），逐项对照源码说明实现细节。
 
+## 下载 / Downloads
+
+构建产物发布在本仓库的 [Releases](https://github.com/FairyJJ/Android-DataBackup/releases) 页面。
+同一份代码提供两种构建类型，功能完全一致，差别只在签名、体积与调试信息：
+
+| 构建类型 | APK 文件名后缀 | 签名 | R8 混淆 / 资源压缩 | 体积 | 适用场景 |
+| --- | --- | --- | --- | --- | --- |
+| **Release（正式版）** | `...-release.apk` | fork 自有 keystore | 开启（`isMinifyEnabled` + `isShrinkResources`） | 更小 | 日常使用，**推荐** |
+| Debug（调试版） | `...-debug.apk` | Android debug keystore | 关闭，保留 `BuildConfig.DEBUG` | 较大（约 35 MB） | 抓日志、排查问题 |
+
+两者的 `applicationId` 相同（foss 变体为 `com.xayah.databackup.foss`），但**签名不同**，
+因此不能互相覆盖安装，升级前需要先卸载（卸载会清空应用内的任务历史，存储目录里的备份文件不受影响）。
+与上游官方版本的签名同样不同，从上游版本迁移过来也需要先卸载。
+
+本仓库只提供 `arm64-v8a` + `foss` 变体（覆盖绝大多数 64 位 arm 设备，无 Firebase 依赖）。
+其他 ABI 或 `premium` 变体请自行按下面的步骤构建。
+
+### 自行构建正式版
+
+`release` 构建类型从环境变量读取签名信息（见 `build-logic/convention/.../ApplicationCommonConventionPlugin.kt`），
+签名文件与口令不随仓库分发，请使用你自己的 keystore：
+
+```bash
+export STORE_FILE=/absolute/path/to/your.jks
+export STORE_PASSWORD=你的store口令
+export KEY_ALIAS=你的别名
+export KEY_PASSWORD=你的key口令
+
+cd source
+./gradlew :app:assembleArm64-v8aFossRelease
+# 产物：source/app/build/outputs/apk/arm64-v8aFoss/release/DataBackup-<版本>-arm64-v8a-foss-release.apk
+```
+
 ## 免责声明 / Disclaimer
 
 - 本仓库为**第三方修改版**，与上游作者无关；上游作者不对本仓库的代码、构建产物或任何使用后果负责。
