@@ -26,6 +26,12 @@
    系统应用只强行停止；任务异常中断时，下次启动会自动兜底解除所有遗留挂起。
 3. **新增文档**：[docs/kill-app-options.md](docs/kill-app-options.md)（英文）、
    [docs/kill-app-options.zh-CN.md](docs/kill-app-options.zh-CN.md)（中文），逐项对照源码说明实现细节。
+4. **修复「备份时被备份的应用被打开 → 备份失败」**：目标语义是「备份期间该应用打不开，且尝试打开
+   这个动作不影响备份结果」。三层保障——挂起保证打不开；`tar` 退出码 1（读取过程中文件被改动）
+   不再单独判定失败，改以归档解压校验为准；读完 APK / DE 之后再挂起一次（`reinforcePause`），
+   把「数据开始读时应用已经起来」的窗口关掉。停止/挂起/解除挂起全部改为尽力而为，失败只记日志，
+   不再中止任务。已在 android-33 x86_64 模拟器上做对照组验证，详见
+   [docs/kill-app-options.zh-CN.md](docs/kill-app-options.zh-CN.md#备份过程中尝试打开被备份的应用)。
 
 ## 下载 / Downloads
 
